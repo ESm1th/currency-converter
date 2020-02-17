@@ -1,7 +1,8 @@
 import os
 import sys
-import json
 import logging
+import json
+from json.decoder import JSONDecodeError
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from http.client import HTTPSConnection
@@ -33,21 +34,67 @@ class CurrencyConverterRequestHandler(BaseHTTPRequestHandler):
     _rate = None
     _content_type = 'application/json'
 
-    def do_GET(self):
-        if not self._rate:
-            self._rate = self.get_convertion_rate()
-        elif self._rate:
-            delta = datetime.utcnow() - self._rate['timestamp']
-            if delta.seconds >= 18000:
-                print('big')
-                self._rate = self.get_convertion_rate()
-        self.send_response(HTTPStatus.OK)
-        self.send_header('Content-Type', self._content_type)
-        self.end_headers()
-        self.wfile.write(self.convert(1))
+    def do_POST(self):
 
+        if self.path == '/convert/':
+            content_length = int(self.headers['Content-Length']) 
+            body = self.rfile.read(content_length)
+
+            try:
+                post_data = json.loads(body)
+                try:
+                    amount = float(post_data.get('amount'))
+                    self.check_rate()
+                    self.prepare_response(HTTPStatus.OK)
+                    self.wfile.write(self.convert(amount))
+                except ValueError:
+                    self.prepare_response(HTTPStatus.BAD_REQUEST)
+                    error = (
+                        'Value of <amount> key in POST request should be '
+                        'a digit, but <{passed}> were passed.'
+                    ).format(passed=post_data.get('amount'))
+                    self.wfile.write(
+                        self.bad_request(HTTPStatus.BAD_REQUEST, error)
+                    )
+            except JSONDecodeError:
+                self.prepare_response(HTTPStatus.BAD_REQUEST)
+                self.wfile.write(
+                    self.bad_request(
+                        HTTPStatus.BAD_REQUEST,
+                        'POST request should be used with parameter <amount>.'
+                    )
+                )
+        else:
+            self.prepare_response(HTTPStatus.NOT_FOUND)
+            error = (
+                'The path <{path}> does not exists.'
+            )
+            self.wfile.write(
+                self.bad_request(HTTPStatus.NOT_FOUND, error)
+            )
+
+    def prepare_response(self, status) -> None:
+        """Setting appropriate headers and status for response."""
+        self.send_response(status)
+        self.send_header('Content-Type', 'application/json')
+        self.end_headers()
+
+    def check_rate(self) -> None:
+        """
+        Checking that `self._rate` attribute exists. If exists checks timedelta
+        for utcnow() and `self._rate` timestamp attribute. If this value is
+        equal or greater then 18000 seconds - updates `self._rate` attrubute,
+        otherwise use it as it is now.
+        """
+        if self._rate:
+            delta = datetime.utcnow() - self._rate['timestamp']
+            if delta >= 18000:
+                self._rate = self.get_convertion_rate()
+        else:
+            self._rate = self.get_convertion_rate()
+    
     def convert(self, amount: float) -> bytes:
-        """Return bytes with data about requested conversation."""
+        """Returns bytes with data about requested conversation."""
         data = {
             'from': self._rate['base'],
             'amount': amount,
@@ -55,12 +102,22 @@ class CurrencyConverterRequestHandler(BaseHTTPRequestHandler):
             'result': amount * self._rate['rate']
         }
         return bytes(json.dumps(data), 'utf-8')
+    
+    def bad_request(self, status_code: int, error: str) -> bytes:
+        """Returns bytes with data about status code and error message."""
+        data = {
+            'status_code': status_code,
+            'error': error
+        }
+        return bytes(json.dumps(data), 'utf-8')
 
     def get_convertion_rate(self) -> dict:
-        """Send request to free API to get exchange rates from `USD` to all
+        """
+        Send request to free API to get exchange rates from `USD` to all
         other currencies and then return dict with exchange rate for
         only russian `RUB`, `USD` as `base` key currency and timestamp
-        for caching purposes."""
+        for caching purposes.
+        """
         connection = HTTPSConnection('api.exchangerate-api.com')
         connection.request('GET', '/v4/latest/USD')
         response = connection.getresponse()

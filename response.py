@@ -58,7 +58,7 @@ class ValueErrorResponse(Response):
 
     def handle(self, amount: str) -> None:
         """
-        Method uses handler to response to `ValueError`. It format response,
+        Method uses handler to respond to `ValueError`. It format response,
         add `error` to response data and send it to client.
         """
         error = (
@@ -68,19 +68,61 @@ class ValueErrorResponse(Response):
         self.send({'error': error})
 
 
-class JsonDecodeErrorResponse(Response):
+class InvalidKeyResponse(Response):
 
     """
-    Class represent `400 BAD REQUEST` response with error from
-    `JSONDecodeError` exception.
+    Class represent `400 BAD REQUEST` response with error when client send bad
+    data to POST request. For example the valid key for url is `amount`, but
+    client sent request with another key.
+
+    Example with `httpie` module:
+        - valid: http POST http://host:port/convert/ amount=10
+        - invalid: http POST http://host:port/convert/ bad_key=...
     """
 
     status_code = HTTPStatus.BAD_REQUEST
 
     def handle(self) -> None:
         """
-        Method uses handler to response to `JSONDecodeError`. It format
+        Method uses handler to respond to invalid request. It format
         response, add `error` to response data and send it to client.
         """
         error = 'POST request should be used with parameter <amount>.'
+        self.send({'error': error})
+
+
+class NotFoundResponse(Response):
+
+    """
+    Class represent `404 NOT FOUND` response with error when route for path
+    does not exist.
+    """
+
+    status_code = HTTPStatus.NOT_FOUND
+
+    def handle(self, path: str) -> None:
+        """
+        Method uses handler to respond to request when route does not exist.
+        It format response, add `error` to response data and send it to client.
+        """
+        error = 'Path {url_pice} does not exist.'.format(url_pice=path)
+        self.send({'error': error})
+
+
+class MethodNotAllowedResponse(Response):
+
+    """
+    Class represent `405 Method Not Allowed` response with error when client
+    used method that not allowed by server.
+    """
+
+    status_code = HTTPStatus.METHOD_NOT_ALLOWED
+
+    def handle(self) -> None:
+        """
+        Method uses handler to respond to request when client used method that
+        not allowed by server. It format response, add `error` to response data
+        and send it to client.
+        """
+        error = "Request method not allowed."
         self.send({'error': error})

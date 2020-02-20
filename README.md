@@ -1,7 +1,9 @@
-# currency_converter
+# ```Currency-converter```
 Simple HTTP API currency converter USD -> RUB
 
-# How to start
+Dependency: `python 3.7`
+
+## How to start
 Clone repository:
 ```
 $ git clone https://github.com/ESm1th/currency_converter.git
@@ -11,7 +13,7 @@ Change direcotry to project folder:
 $ cd currency_converter/
 ```
 
-## Run with docker
+#### Run with docker
 If you prefer to use `docker` you can build image:
 ```
 $ docker build --tag converter .
@@ -27,7 +29,7 @@ $ docker run --network host --env PORT=8080 converter
 Server is running in docker container now.
 
 
-## Run with python
+#### Run with python
 Create virtual environment and activate it:
 ```
 $ mkvirtualenv converter --python=python3.7
@@ -37,7 +39,7 @@ Then change directory to `converter` folder and run:
 $ python server.py
 ```
 
-## Sending requests
+#### Sending requests
 Valid `method` is `POST` and valid `url` format for requests:
 ```
 http://{host}:{port}/convert/
@@ -64,7 +66,7 @@ Server: BaseHTTP/0.6 Python/3.7.6
 }
 ```
 
-Invalid request with non existing `path` '/non-existing/' but with valid `method`:
+Invalid request with non existing path `/non-existing/` but with valid `method`:
 ```
 $ http POST http://localhost:8080/non-existing/
 ```

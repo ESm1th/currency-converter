@@ -1,4 +1,4 @@
-# ```Currency-converter```
+# currency-converter
 Simple HTTP API currency converter USD -> RUB
 
 Dependency: `python 3.7`
@@ -6,11 +6,11 @@ Dependency: `python 3.7`
 ## How to start
 Clone repository:
 ```
-$ git clone https://github.com/ESm1th/currency_converter.git
+$ git clone https://github.com/ESm1th/currency-converter.git
 ```
 Change direcotry to project folder:
 ```
-$ cd currency_converter/
+$ cd currency-converter/
 ```
 
 #### Run with docker
@@ -95,4 +95,9 @@ Server: BaseHTTP/0.6 Python/3.7.6
 {
     "error": "Request method not allowed."
 }
+```
+### Run tests
+From `currency-converter/converter` folder:
+```
+python -m unittest -v tests
 ```

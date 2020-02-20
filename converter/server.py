@@ -29,7 +29,7 @@ logger.addHandler(handler)
 
 # server settings
 HOST = os.getenv('HOST') or 'localhost'
-PORT = os.getenv('PORT') or 8000
+PORT = int(os.getenv('PORT')) if os.getenv('PORT') else 8000
 
 
 class CurrencyConverterRequestHandler(BaseHTTPRequestHandler):
@@ -38,7 +38,7 @@ class CurrencyConverterRequestHandler(BaseHTTPRequestHandler):
     Class handle only `POST` request with parameter `amount` in request.
     For example valid request to sevice if it running on localhost and port
     8000 using `httpie` python app:
-        - http POST http://loaclhost:8000/convert/ amount=10
+        - http POST http://localhost:8000/convert/ amount=10
     """
 
     @property
@@ -59,12 +59,15 @@ class CurrencyConverterRequestHandler(BaseHTTPRequestHandler):
         return MethodNotAllowedResponse(self).handle()
 
     def do_GET(self) -> None:
+        """Return `not allowed` error"""
         return self.not_allowed_response('GET')
 
     def do_PUT(self) -> None:
+        """Return `not allowed` error"""
         return self.not_allowed_response('PUT')
 
     def do_HEAD(self) -> None:
+        """Return `not allowed` error"""
         return self.not_allowed_response('HEAD')
 
     def do_POST(self) -> None:
@@ -132,7 +135,12 @@ if __name__ == '__main__':
     address = (HOST, PORT)
     http_server = HTTPServer(address, CurrencyConverterRequestHandler)
     try:
-        logger.info('Server started')
+        logger.info(
+            'Server started on {address}:{port}'.format(
+                address=http_server.server_address[0],
+                port=http_server.server_address[1]
+            )
+        )
         http_server.serve_forever()
     except KeyboardInterrupt:
         http_server.server_close()

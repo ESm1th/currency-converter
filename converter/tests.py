@@ -68,11 +68,17 @@ class TestAPI(TestCase):
         )
 
     def test_send_valid_post_convert_request(self):
+        """
+        Send valid request and check status code.
+        """
         data = json.dumps(self.valid_payload)
         response = self.make_post_convert_request(payload=data)
         self.assertEqual(response.status, HTTPStatus.OK)
 
     def test_converter_convert(self):
+        """
+        Checks that `convert` request converts amount properly.
+        """
         data = json.dumps({'amount': 1})
         unit_response = self.make_post_convert_request(payload=data)
         one_usd = json.loads(unit_response.read()).get('result')
@@ -89,6 +95,11 @@ class TestAPI(TestCase):
         )
 
     def test_value_error_response(self):
+        """
+        Checks that client receive valid status code and valid error message
+        when he send request to valid url with valid method but with incorrect
+        type of value of parameter `amount`.
+        """
         error = (
             'Value of <amount> key in POST request should be '
             'a digit, but <{passed}> were passed.'
@@ -102,6 +113,10 @@ class TestAPI(TestCase):
         self.assertEqual(response_data['error'], error)
 
     def test_json_decode_error_response(self):
+        """
+        Checks that request to valid url with valid method but without
+        parameter `amount` receive back valid status code and valid error.
+        """
         error = 'POST request should be used with parameter <amount>.'
         data = json.dumps({'value': 10})
         response = self.make_post_convert_request(payload=data)
@@ -111,6 +126,10 @@ class TestAPI(TestCase):
         self.assertEqual(response_data['error'], error)
 
     def test_path_does_not_exist(self):
+        """
+        Checks that request to non existing url receive back valid status code
+        and valid error.
+        """
         url_path = '/not-exist/'
         response = self.make_request('POST', path=url_path)
         error = 'Path {url_pice} does not exist.'.format(url_pice=url_path)
@@ -120,14 +139,26 @@ class TestAPI(TestCase):
         self.assertEqual(response_data['error'], error)
 
     def test_get_request(self):
+        """
+        Checks that request with method 'GET' receive back response with valid
+        status code 405.
+        """
         response = self.make_request()
         self.assertEqual(response.status, HTTPStatus.METHOD_NOT_ALLOWED)
 
     def test_put_request(self):
+        """
+        Checks that request with method 'PUT' receive back response with valid
+        status code 405.
+        """
         response = self.make_request('PUT')
         self.assertEqual(response.status, HTTPStatus.METHOD_NOT_ALLOWED)
 
     def test_head_request(self):
+        """
+        Checks that request with method 'HEAD' receive back response with valid
+        status code 405.
+        """
         response = self.make_request('HEAD')
         self.assertEqual(response.status, HTTPStatus.METHOD_NOT_ALLOWED)
 

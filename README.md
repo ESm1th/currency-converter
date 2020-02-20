@@ -55,7 +55,7 @@ Valid request:
 $ http POST http://localhost:8080/convert/ amount=10
 ```
 Response to this request:
-```python
+```
 HTTP/1.0 200 OK
 Content-Type: application/json
 Date: Thu, 20 Feb 2020 17:38:29 GMT
@@ -74,7 +74,7 @@ Invalid request with non existing path `/non-existing/` but with valid `method`:
 $ http POST http://localhost:8080/non-existing/
 ```
 Response to this request:
-```python
+```
 HTTP/1.0 404 Not Found
 Content-Type: application/json
 Date: Thu, 20 Feb 2020 18:02:53 GMT
@@ -89,7 +89,7 @@ The same request but with invalid `method`:
 $ http http://localhost:8080/non-existing/
 ```
 Response to this request:
-```python
+```
 HTTP/1.0 405 Method Not Allowed
 Content-Type: application/json
 Date: Thu, 20 Feb 2020 18:03:59 GMT

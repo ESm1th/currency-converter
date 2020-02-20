@@ -52,7 +52,7 @@ Examples with `httpie` python app (you can install it with `pip install httpie`)
 
 Valid request:
 ```
-$ http POST http://localhost:8080/convert amount=10
+$ http POST http://localhost:8080/convert/ amount=10
 ```
 Response to this request:
 ```python
@@ -77,7 +77,7 @@ Response to this request:
 ```python
 HTTP/1.0 404 Not Found
 Content-Type: application/json
-Date: Thu, 20 Feb 2020 17:41:05 GMT
+Date: Thu, 20 Feb 2020 18:02:53 GMT
 Server: BaseHTTP/0.6 Python/3.7.6
 
 {
@@ -92,7 +92,7 @@ Response to this request:
 ```python
 HTTP/1.0 405 Method Not Allowed
 Content-Type: application/json
-Date: Thu, 20 Feb 2020 17:43:14 GMT
+Date: Thu, 20 Feb 2020 18:03:59 GMT
 Server: BaseHTTP/0.6 Python/3.7.6
 
 {

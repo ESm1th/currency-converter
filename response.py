@@ -3,6 +3,11 @@ from abc import ABC, abstractmethod
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler
 
+from converter import CurrencyConverter
+
+
+converter = CurrencyConverter()
+
 
 class Response(ABC):
 
@@ -38,8 +43,6 @@ class ConvertResponse(Response):
         passed `USD` amount argument to `RUB` amount. Format response and
         send it to client.
         """
-        converter = self.handler.converter
-
         if not converter.check_rate():
             converter.update()
 

@@ -5,7 +5,6 @@ import json
 from json.decoder import JSONDecodeError
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-from converter import CurrencyConverter
 from response import (
     ConvertResponse,
     ValueErrorResponse,
@@ -42,11 +41,6 @@ class CurrencyConverterRequestHandler(BaseHTTPRequestHandler):
         - http POST http://loaclhost:8000/convert/ amount=10
     """
 
-    def __init__(self, *args, **kwargs) -> None:
-        """Create converter and assign it to instance attribute."""
-        self.converter = CurrencyConverter()
-        super().__init__(*args, **kwargs)
-
     @property
     def default_log_text(self):
         """Default log text to start log message."""
@@ -58,20 +52,20 @@ class CurrencyConverterRequestHandler(BaseHTTPRequestHandler):
 
     def not_allowed_response(self, method: str) -> None:
         """Create `MethodNotAllowedResponse` and handle request."""
-        MethodNotAllowedResponse(self).handle()
         logger.error(
             self.default_log_text +
             'with method {method} not allowed.'.format(method=method)
         )
+        return MethodNotAllowedResponse(self).handle()
 
     def do_GET(self) -> None:
-        self.not_allowed_response('GET')
+        return self.not_allowed_response('GET')
 
     def do_PUT(self) -> None:
-        self.not_allowed_response('PUT')
+        return self.not_allowed_response('PUT')
 
     def do_HEAD(self) -> None:
-        self.not_allowed_response('HEAD')
+        return self.not_allowed_response('HEAD')
 
     def do_POST(self) -> None:
         """
@@ -89,7 +83,6 @@ class CurrencyConverterRequestHandler(BaseHTTPRequestHandler):
 
                 if amount:
                     try:
-                        ConvertResponse(self).handle(float(amount))
                         logger.info(
                             self.default_log_text +
                             'to convert {amount} USD'.format(
@@ -97,8 +90,8 @@ class CurrencyConverterRequestHandler(BaseHTTPRequestHandler):
                                 amount=amount
                             )
                         )
+                        return ConvertResponse(self).handle(float(amount))
                     except ValueError:
-                        ValueErrorResponse(self).handle(amount)
                         logger.info(
                             self.default_log_text +
                             'to convert unappropriate type: {type} '
@@ -108,8 +101,8 @@ class CurrencyConverterRequestHandler(BaseHTTPRequestHandler):
                                 value=amount
                             )
                         )
+                        return ValueErrorResponse(self).handle(amount)
                 else:
-                    InvalidKeyResponse(self).handle()
                     logger.info(
                         self.default_log_text +
                         'with invalid `POST` parameters: {post_data}'.format(
@@ -118,20 +111,21 @@ class CurrencyConverterRequestHandler(BaseHTTPRequestHandler):
                             post_data=post_data
                         )
                     )
+                    return InvalidKeyResponse(self).handle()
             except JSONDecodeError:
-                InvalidKeyResponse(self).handle()
                 logger.info(
                     self.default_log_text +
                     'without any parameters'.format(
                         address=self.client_address,
                     )
                 )
+                return InvalidKeyResponse(self).handle()
         else:
-            NotFoundResponse(self).handle(self.path)
             logger.info(
                 self.default_log_text +
                 '{path} not found'.format(path=self.path)
             )
+            return NotFoundResponse(self).handle(self.path)
 
 
 if __name__ == '__main__':

@@ -8,7 +8,7 @@ Clone repository:
 ```
 $ git clone https://github.com/ESm1th/currency-converter.git
 ```
-Change direcotry to project folder:
+Change directory to project folder:
 ```
 $ cd currency-converter/
 ```

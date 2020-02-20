@@ -1,5 +1,5 @@
 # currency-converter
-Simple HTTP API currency converter USD -> RUB
+Simple HTTP API currency converter `USD` -> `RUB`
 
 Dependency: `python 3.7`
 
@@ -30,6 +30,8 @@ Server is running in docker container now.
 
 
 #### Run with python
+If you not prefer to use docker you can go this way.
+
 Create virtual environment and activate it:
 ```
 $ mkvirtualenv converter --python=python3.7
@@ -46,7 +48,8 @@ http://{host}:{port}/convert/
 ```
 Valid request must include parameter `amount`.
 
-Examples with `httpie` python app (you can install it with `pip install httpie`):
+Examples with `httpie` python app (you can install it with `pip install httpie`).
+
 Valid request:
 ```
 $ http POST http://localhost:8080/convert amount=10
@@ -96,6 +99,7 @@ Server: BaseHTTP/0.6 Python/3.7.6
     "error": "Request method not allowed."
 }
 ```
+
 ### Run tests
 From `currency-converter/converter` folder:
 ```

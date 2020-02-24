@@ -39,7 +39,7 @@ class ConvertResponse(Response):
 
     def handle(self, amount: float) -> None:
         """
-        Method used handlers converter class to process conversation from
+        Method used `converter` object to process conversation from
         passed `USD` amount argument to `RUB` amount. Format response and
         send it to client.
         """

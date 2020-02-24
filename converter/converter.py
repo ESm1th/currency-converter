@@ -42,8 +42,8 @@ class CurrencyConverter:
     def check_rate(self) -> bool:
         """
         Checking timedelta for utcnow() and `self._rate` timestamp attribute.
-        If this value is equal or greater then 18000 seconds - return `True`,
-        otherwise return False.
+        If this value is equal or greater then 18000 seconds - return `False`,
+        otherwise return True.
         """
         delta = datetime.utcnow() - self._rate['timestamp']
         if delta.seconds >= 18000:
